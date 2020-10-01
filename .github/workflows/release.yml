@@ -22,11 +22,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "DEBUG"
-          export
-          ls cozy-stack-*
-          echo "${GITHUB_REF##*/}"
-          echo gh release create "$tag_name" cozy-stack-* --target "$GITHUB_SHA"
-          echo "END OF DEBUG"
           tag_name="${GITHUB_REF##*/}"
           gh release create "$tag_name" cozy-stack-* --target "$GITHUB_SHA"
