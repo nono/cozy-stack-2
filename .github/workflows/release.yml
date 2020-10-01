@@ -20,12 +20,13 @@ jobs:
           GOOS=freebsd GOARCH=amd64 ./scripts/build.sh release
       - name: Create the release
         env:
-          GITHUB_REF: ${{ github.ref }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tag_name="${GITHUB_REF##*/}"
-          gh release create "$tag_name" cozy-stack-* --target "$GITHUB_REF"
           echo "DEBUG"
+          export
           ls cozy-stack-*
-          echo $tag_name
-          echo gh release create "$tag_name" cozy-stack-* --target "$GITHUB_REF"
+          echo "${GITHUB_REF##*/}"
+          echo gh release create "$tag_name" cozy-stack-* --target "$GITHUB_SHA"
+          echo "END OF DEBUG"
+          tag_name="${GITHUB_REF##*/}"
+          gh release create "$tag_name" cozy-stack-* --target "$GITHUB_SHA"
