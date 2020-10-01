@@ -1,0 +1,33 @@
+name: Create releases
+on:
+  push:
+    tags:
+    - '*.*.*' # Matching a version number like 1.4.19
+jobs:
+  publish_on_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug
+        run: |
+          echo "Inputs: ${{ github.event.inputs }}"
+          echo "----------------------------------"
+          echo "tag_name: ${{ github.ref }}"
+      - name: Install Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.15
+      - name: Check code
+        uses: actions/checkout@v2
+      - name: Build the binaries
+        run: |
+          GOOS=linux   GOARCH=amd64 ./scripts/build.sh release
+          GOOS=linux   GOARCH=arm   ./scripts/build.sh release
+          GOOS=freebsd GOARCH=amd64 ./scripts/build.sh release
+      - name: Debug
+        run: |
+          ls cozy-stack-*
+      - name: Create the release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ github.ref }} cozy-stack-*
