@@ -7,11 +7,6 @@ jobs:
   publish_on_release:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug
-        run: |
-          echo "Inputs: ${{ github.event.inputs }}"
-          echo "----------------------------------"
-          echo "tag_name: ${{ github.ref }}"
       - name: Install Go
         uses: actions/setup-go@v1
         with:
@@ -23,11 +18,13 @@ jobs:
           GOOS=linux   GOARCH=amd64 ./scripts/build.sh release
           GOOS=linux   GOARCH=arm   ./scripts/build.sh release
           GOOS=freebsd GOARCH=amd64 ./scripts/build.sh release
-      - name: Debug
-        run: |
-          ls cozy-stack-*
       - name: Create the release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create ${{ github.ref }} cozy-stack-*
+          tag_name="${GITHUB_REF##*/}"
+          gh release create "${tag_name}" cozy-stack-* --target ${{ github.ref }}
+          echo "DEBUG"
+          ls cozy-stack-*
+          echo $tag_name
+          echo gh release create "${tag_name}" cozy-stack-* --target ${{ github.ref }}
